@@ -1,0 +1,52 @@
+1. Introduction
+
+Le Binary Network Communication Protocol (BNCP) est un protocole de communication binaire conçu pour faciliter l'échange de données entre des applications via un réseau. BNCP est conçu pour être évolutif, permettant l'ajout de nouveaux types de messages sans altérer la compatibilité avec les versions précédentes du protocole.
+
+2. Structure du paquet
+
+Un paquet BNCP est composé de deux parties principales : l'en-tête et les données. La structure de l'en-tête est la suivante :
+
++------+-------+--------------+
+| Type | Length|  Reserved    |
+| (1 octet) | (2 octets) | (1 octet) |
++------+-------+--------------+
+
+
+Type (1 octet) : Indique le type de message contenu dans le paquet.
+Length (2 octets) : Indique la longueur des données en octets.
+Reserved (1 octet) : Réservé pour une utilisation future.
+Les données du paquet suivent immédiatement l'en-tête.
+
+3. Types de message
+
+Les types de message définis pour BNCP sont les suivants :
+
+0x01 : Message de texte : Contient des données textuelles.
+0x02 : Message de commande : Contient des commandes ou des instructions à exécuter.
+0x03 : Message de données binaires : Contient des données binaires.
+D'autres types de message peuvent être ajoutés à l'avenir sans altérer la compatibilité avec les versions précédentes du protocole.
+
+4. Utilisation
+
+Pour envoyer un message via BNCP, l'expéditeur construit un paquet en incluant le type de message approprié, la longueur des données et les données elles-mêmes. Le paquet est ensuite envoyé sur le réseau.
+
+Le destinataire analyse l'en-tête du paquet pour déterminer le type de message et la longueur des données. Il extrait ensuite les données du paquet et les traite en conséquence.
+
+5. Exemple d'utilisation
+
+Supposons que l'expéditeur souhaite envoyer un message de texte contenant la chaîne "Hello, world!" via BNCP. Voici comment le paquet serait construit :
+
++------+------+--------------+
+| 0x01 | 0x000C |  Reserved   |
+| (1)  | (2)    |  (1)        |
++------+------+--------------+
+| H | e | l | l | o | , |   |
+| w | o | r | l | d | ! | \0|
++------+------+--------------+
+
+
+L'expéditeur envoie ce paquet sur le réseau. Le destinataire analyse l'en-tête pour déterminer qu'il s'agit d'un message de texte et que sa longueur est de 12 octets. Il extrait ensuite les données "Hello, world!" et les traite en conséquence.
+
+6. Conclusion
+
+BNCP est un protocole de communication binaire léger et évolutif, adapté à une large gamme d'applications réseau. Sa structure simple et sa capacité à évoluer en font un choix attrayant pour les développeurs d'applications.
