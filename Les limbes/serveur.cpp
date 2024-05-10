@@ -8,52 +8,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "LPTF_Socket.h"
+
 constexpr int MAX_BUFFER_SIZE = 1024;
-
-class LPTF_Socket {
-private:
-    int sockfd;
-
-public:
-    LPTF_Socket(int domain, int type, int protocol) {
-        sockfd = socket(domain, type, protocol);
-        if (sockfd == -1) {
-            throw std::runtime_error("Failed to create socket");
-        }
-    }
-
-    ~LPTF_Socket() {
-        close(sockfd);
-    }
-
-    void bind(const struct sockaddr *addr, socklen_t addrlen) {
-        if (::bind(sockfd, addr, addrlen) == -1) {
-            throw std::runtime_error("Failed to bind socket");
-        }
-    }
-
-    void listen(int backlog) {
-        if (::listen(sockfd, backlog) == -1) {
-            throw std::runtime_error("Failed to listen on socket");
-        }
-    }
-
-    int accept(struct sockaddr *addr, socklen_t *addrlen) {
-        int new_sockfd = ::accept(sockfd, addr, addrlen);
-        if (new_sockfd == -1) {
-            throw std::runtime_error("Failed to accept connection");
-        }
-        return new_sockfd;
-    }
-
-    ssize_t send(const void *buf, size_t len, int flags) {
-        return ::send(sockfd, buf, len, flags);
-    }
-
-    ssize_t recv(void *buf, size_t len, int flags) {
-        return ::recv(sockfd, buf, len, flags);
-    }
-};
 
 class Server {
 private:
