@@ -45,6 +45,9 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "xlocmes": "cpp",
+        "ranges": "cpp",
+        "sstream": "cpp"
     }
 }

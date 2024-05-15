@@ -23,9 +23,19 @@ public:
 
     void connect(const struct sockaddr *addr, socklen_t addrlen);
 
-    ssize_t send(const void *buf, size_t len, int flags);
+    ssize_t send(int sockfdto, const void *buf, size_t len, int flags);
 
-    ssize_t recv(void *buf, size_t len, int flags);
+    ssize_t recv(int sockfdfrom, void *buf, size_t len, int flags);
+
+    ssize_t read(void *buf, size_t len);
+
+    ssize_t write(const void *buf, size_t len);
+
+    int accept(sockaddr *__restrict__ addr, socklen_t *__restrict__ addr_len);
+
+    int bind(const sockaddr *addr, socklen_t len);
+
+    int listen(int backlog);
 };
 
 #endif
