@@ -9,20 +9,42 @@
 #include <arpa/inet.h>
 
 #include "LPTF_Socket.hpp"
+#include "LPTF_Packet.hpp"
 
 
 LPTF_Socket::LPTF_Socket(int domain, int type, int protocol) {
+    init(domain, type, protocol);
+}
+
+LPTF_Socket::LPTF_Socket() {
+    sockfd = -1;
+}
+    
+LPTF_Socket::~LPTF_Socket() {
+    if (sockfd != -1)
+        close(sockfd);
+}
+
+LPTF_Socket::LPTF_Socket(const LPTF_Socket &src) {
+    sockfd = src.sockfd;
+}
+
+LPTF_Socket &LPTF_Socket::operator=(const LPTF_Socket &src) {
+    sockfd = src.sockfd;
+    return *this;
+}
+
+
+void LPTF_Socket::init(int domain, int type, int protocol) {
+    if (sockfd > 0) {
+        throw std::runtime_error("Socket already created");
+    }
+
     sockfd = socket(domain, type, protocol);
     if (sockfd == -1) {
         throw std::runtime_error("Failed to create socket");
     }
 }
-    
-LPTF_Socket::~LPTF_Socket() {
-    close(sockfd);
-}
-
-
 
 void LPTF_Socket::connect(const struct sockaddr *addr, socklen_t addrlen) {
     if (::connect(sockfd, addr, addrlen) == -1) {
@@ -30,20 +52,56 @@ void LPTF_Socket::connect(const struct sockaddr *addr, socklen_t addrlen) {
     }
 }
 
-ssize_t LPTF_Socket::send(int sockfdto, const void *buf, size_t len, int flags) {
-    return ::send(sockfdto, buf, len, flags);
+ssize_t LPTF_Socket::send(int sockfdto, LPTF_Packet &packet, int flags) {
+    void *data = packet.data();
+
+    if (data) {
+        int retval = ::send(sockfdto, data, packet.size(), flags);
+        free(data);
+        return retval;
+    }
+
+    return -1;
 }
 
-ssize_t LPTF_Socket::recv(int sockfdfrom, void *buf, size_t len, int flags) {
-    return ::recv(sockfdfrom, buf, len, flags);
+LPTF_Packet LPTF_Socket::recv(int sockfdfrom, int flags) {
+    uint8_t buffer[sizeof(PACKET_HEADER)+UINT16_MAX];
+    int retval = ::recv(sockfdfrom, buffer, sizeof(PACKET_HEADER)+UINT8_MAX, flags);
+
+    if (retval < sizeof(PACKET_HEADER)) {
+        char msg[64];
+        sprintf(msg, "Received too few bytes (expected %d, got %d).", sizeof(PACKET_HEADER), retval);
+        throw std::runtime_error(msg);
+    }
+
+    LPTF_Packet packet(buffer, sizeof(PACKET_HEADER)+UINT8_MAX);
+    return packet;
 }
 
-ssize_t LPTF_Socket::read(void *buf, size_t len) {
-    return ::read(sockfd, buf, len);
+LPTF_Packet LPTF_Socket::read() {
+    uint8_t buffer[sizeof(PACKET_HEADER)+UINT16_MAX];
+    int retval = ::read(sockfd, buffer, sizeof(PACKET_HEADER)+UINT8_MAX);
+
+    if (retval < sizeof(PACKET_HEADER)) {
+        char msg[64];
+        sprintf(msg, "Received too few bytes (expected %d, got %d).", sizeof(PACKET_HEADER), retval);
+        throw std::runtime_error(msg);
+    }
+
+    LPTF_Packet packet(buffer, sizeof(PACKET_HEADER)+UINT8_MAX);
+    return packet;
 }
 
-ssize_t LPTF_Socket::write(const void *buf, size_t len) {
-    return ::write(sockfd, buf, len);
+ssize_t LPTF_Socket::write(LPTF_Packet &packet) {
+    void *data = packet.data();
+
+    if (data) {
+        int retval = ::write(sockfd, data, packet.size());
+        free(data);
+        return retval;
+    }
+    
+    return -1;
 }
 
 int LPTF_Socket::accept(sockaddr *__restrict__ addr, socklen_t *__restrict__ addr_len) {

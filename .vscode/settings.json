@@ -48,6 +48,24 @@
         "cstring": "cpp",
         "xlocmes": "cpp",
         "ranges": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "chrono": "cpp",
+        "executor": "cpp",
+        "ratio": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "io_context": "cpp",
+        "socket": "cpp",
+        "future": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp",
+        "span": "cpp",
+        "buffer": "cpp",
+        "condition_variable": "cpp",
+        "ctime": "cpp",
+        "netfwd": "cpp",
+        "mutex": "cpp",
+        "cinttypes": "cpp",
+        "iomanip": "cpp"
     }
 }

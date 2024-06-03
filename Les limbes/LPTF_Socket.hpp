@@ -17,9 +17,17 @@ private:
     int sockfd;
 
 public:
+    LPTF_Socket();
+
     LPTF_Socket(int domain, int type, int protocol);
+    
+    LPTF_Socket(const LPTF_Socket &src);
 
     ~LPTF_Socket();
+
+    LPTF_Socket &operator=(const LPTF_Socket& src);
+
+    void init(int domain, int type, int protocol);
 
     void connect(const struct sockaddr *addr, socklen_t addrlen);
 

@@ -12,17 +12,38 @@
 
 
 LPTF_Socket::LPTF_Socket(int domain, int type, int protocol) {
+    init(domain, type, protocol);
+}
+
+LPTF_Socket::LPTF_Socket() {
+    sockfd = -1;
+}
+    
+LPTF_Socket::~LPTF_Socket() {
+    if (sockfd != -1)
+        close(sockfd);
+}
+
+LPTF_Socket::LPTF_Socket(const LPTF_Socket &src) {
+    sockfd = src.sockfd;
+}
+
+LPTF_Socket &LPTF_Socket::operator=(const LPTF_Socket& src) {
+    sockfd = src.sockfd;
+    return *this;
+}
+
+
+void LPTF_Socket::init(int domain, int type, int protocol) {
+    if (sockfd <= 0) {
+        throw std::runtime_error("Socket already created");
+    }
+
     sockfd = socket(domain, type, protocol);
     if (sockfd == -1) {
         throw std::runtime_error("Failed to create socket");
     }
 }
-    
-LPTF_Socket::~LPTF_Socket() {
-    close(sockfd);
-}
-
-
 
 void LPTF_Socket::connect(const struct sockaddr *addr, socklen_t addrlen) {
     if (::connect(sockfd, addr, addrlen) == -1) {

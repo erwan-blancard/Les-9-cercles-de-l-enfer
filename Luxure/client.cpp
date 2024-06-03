@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 
 #include "LPTF_Socket.hpp"
+#include "LPTF_Utils.hpp"
 
 constexpr int MAX_BUFFER_SIZE = 1024;
 
@@ -32,7 +33,10 @@ public:
     void send(const std::string &message) {
         std::cout << "Sending message..." << std::endl;
 
-        int ret = clientSocket->write(message.c_str(), message.size());
+        LPTF_Packet packet = build_message_packet(message);
+        packet.print_specs();
+
+        int ret = clientSocket->write(packet);
 
         // on error
         if (ret == -1) {
@@ -41,15 +45,15 @@ public:
 
         std::cout << "Sent message, waiting for server response..." << std::endl;
 
-        char buffer[MAX_BUFFER_SIZE];
-        ssize_t bytesReceived = clientSocket->read(buffer, MAX_BUFFER_SIZE);
+        try {
+            LPTF_Packet server_packet = clientSocket->read();
+            server_packet.print_specs();
 
-        if (bytesReceived > 0)
-            std::cout << "Received from server: " << std::string(buffer, bytesReceived) << std::endl;
-        else if (bytesReceived == 0)
-            std::cout << "Got empty response from server. (" << bytesReceived << " bytes)" << std::endl;
-        else
-            std::cout << "Error when receiving server response (" << bytesReceived << " bytes)" << std::endl;
+            std::cout << "Received from server: \"" << std::string((const char *)server_packet.get_content(), server_packet.get_header().length) << '\"' << std::endl;
+        } catch (const std::runtime_error &ex) {
+            std::cout << "Error when receiving server response: " << ex.what() << std::endl;
+            return;
+        }
     }
 };
 
