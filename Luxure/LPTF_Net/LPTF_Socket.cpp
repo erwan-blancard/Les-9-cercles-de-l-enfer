@@ -12,12 +12,12 @@
 #include "LPTF_Packet.hpp"
 
 
-LPTF_Socket::LPTF_Socket(int domain, int type, int protocol) {
-    init(domain, type, protocol);
+LPTF_Socket::LPTF_Socket() {
+    init(AF_INET, SOCK_STREAM, 0);
 }
 
-LPTF_Socket::LPTF_Socket() {
-    sockfd = -1;
+LPTF_Socket::LPTF_Socket(int domain, int type, int protocol) {
+    init(domain, type, protocol);
 }
     
 LPTF_Socket::~LPTF_Socket() {
@@ -56,7 +56,7 @@ ssize_t LPTF_Socket::send(int sockfdto, LPTF_Packet &packet, int flags) {
     void *data = packet.data();
 
     if (data) {
-        int retval = ::send(sockfdto, data, packet.size(), flags);
+        ssize_t retval = ::send(sockfdto, data, packet.size(), flags);
         free(data);
         return retval;
     }
@@ -66,11 +66,11 @@ ssize_t LPTF_Socket::send(int sockfdto, LPTF_Packet &packet, int flags) {
 
 LPTF_Packet LPTF_Socket::recv(int sockfdfrom, int flags) {
     uint8_t buffer[sizeof(PACKET_HEADER)+UINT16_MAX];
-    int retval = ::recv(sockfdfrom, buffer, sizeof(PACKET_HEADER)+UINT8_MAX, flags);
+    ssize_t retval = ::recv(sockfdfrom, buffer, sizeof(PACKET_HEADER)+UINT8_MAX, flags);
 
-    if (retval < sizeof(PACKET_HEADER)) {
+    if (retval < 0 /*aka -1*/ || ((size_t) retval) /*-Wsign-compare*/ < sizeof(PACKET_HEADER)) {
         char msg[64];
-        sprintf(msg, "Received too few bytes (expected %d, got %d).", sizeof(PACKET_HEADER), retval);
+        sprintf(msg, "Received too few bytes (expected %ld, got %ld).", sizeof(PACKET_HEADER), retval);
         throw std::runtime_error(msg);
     }
 
@@ -80,11 +80,11 @@ LPTF_Packet LPTF_Socket::recv(int sockfdfrom, int flags) {
 
 LPTF_Packet LPTF_Socket::read() {
     uint8_t buffer[sizeof(PACKET_HEADER)+UINT16_MAX];
-    int retval = ::read(sockfd, buffer, sizeof(PACKET_HEADER)+UINT8_MAX);
+    ssize_t retval = ::read(sockfd, buffer, sizeof(PACKET_HEADER)+UINT8_MAX);
 
-    if (retval < sizeof(PACKET_HEADER)) {
+    if (retval < 0 /*aka -1*/ || ((size_t) retval) /*-Wsign-compare*/ < sizeof(PACKET_HEADER)) {
         char msg[64];
-        sprintf(msg, "Received too few bytes (expected %d, got %d).", sizeof(PACKET_HEADER), retval);
+        sprintf(msg, "Received too few bytes (expected %ld, got %ld).", sizeof(PACKET_HEADER), retval);
         throw std::runtime_error(msg);
     }
 
@@ -96,7 +96,7 @@ ssize_t LPTF_Socket::write(LPTF_Packet &packet) {
     void *data = packet.data();
 
     if (data) {
-        int retval = ::write(sockfd, data, packet.size());
+        ssize_t retval = ::write(sockfd, data, packet.size());
         free(data);
         return retval;
     }

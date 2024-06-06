@@ -8,8 +8,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "LPTF_Socket.hpp"
-#include "LPTF_Utils.hpp"
+#include "LPTF_Net/LPTF_Socket.hpp"
+#include "LPTF_Net/LPTF_Utils.hpp"
 
 constexpr int MAX_BUFFER_SIZE = 1024;
 
@@ -19,7 +19,7 @@ private:
 
 public:
     Client(const std::string &serverIP, int port) {
-        clientSocket = std::make_unique<LPTF_Socket>(AF_INET, SOCK_STREAM, 0);
+        clientSocket = std::make_unique<LPTF_Socket>();
 
         struct sockaddr_in serverAddr;
         std::memset(&serverAddr, 0, sizeof(serverAddr));

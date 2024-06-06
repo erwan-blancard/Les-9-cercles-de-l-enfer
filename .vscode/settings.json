@@ -66,6 +66,7 @@
         "netfwd": "cpp",
         "mutex": "cpp",
         "cinttypes": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "fstream": "cpp"
     }
 }
