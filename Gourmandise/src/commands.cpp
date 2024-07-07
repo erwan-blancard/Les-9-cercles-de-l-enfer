@@ -8,8 +8,8 @@
 #include <dirent.h>
 #include <sstream>
 
-#include "LPTF_Net/LPTF_Socket.hpp"
-#include "LPTF_Net/LPTF_Utils.hpp"
+#include "../include/LPTF_Net/LPTF_Socket.hpp"
+#include "../include/LPTF_Net/LPTF_Utils.hpp"
 
 
 #define SHELL_BUFFER_SIZE 1024

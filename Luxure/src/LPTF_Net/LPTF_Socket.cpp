@@ -8,8 +8,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "LPTF_Socket.hpp"
-#include "LPTF_Packet.hpp"
+#include "../../include/LPTF_Net/LPTF_Socket.hpp"
+#include "../../include/LPTF_Net/LPTF_Packet.hpp"
 
 
 LPTF_Socket::LPTF_Socket() {

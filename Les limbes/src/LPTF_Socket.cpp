@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "LPTF_Socket.hpp"
+#include "../include/LPTF_Socket.hpp"
 
 
 LPTF_Socket::LPTF_Socket(int domain, int type, int protocol) {

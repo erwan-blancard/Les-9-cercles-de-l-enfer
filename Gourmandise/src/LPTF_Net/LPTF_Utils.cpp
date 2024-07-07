@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "LPTF_Packet.hpp"
+#include "../../include/LPTF_Net/LPTF_Packet.hpp"
 
 
 // repfrom is the packet type this reply refers to

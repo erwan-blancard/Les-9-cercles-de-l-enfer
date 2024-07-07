@@ -8,8 +8,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "LPTF_Net/LPTF_Socket.hpp"
-#include "LPTF_Net/LPTF_Utils.hpp"
+#include "../include/LPTF_Net/LPTF_Socket.hpp"
+#include "../include/LPTF_Net/LPTF_Utils.hpp"
 
 constexpr int MAX_BUFFER_SIZE = 1024;
 

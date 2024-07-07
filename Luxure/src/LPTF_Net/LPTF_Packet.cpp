@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 
-#include "LPTF_Packet.hpp"
+#include "../../include/LPTF_Net/LPTF_Packet.hpp"
 // #include "LPTF_Utils.hpp"
 
 

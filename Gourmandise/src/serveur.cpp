@@ -10,8 +10,8 @@
 #include <vector>
 #include <thread>
 
-#include "LPTF_Net/LPTF_Socket.hpp"
-#include "LPTF_Net/LPTF_Utils.hpp"
+#include "../include/LPTF_Net/LPTF_Socket.hpp"
+#include "../include/LPTF_Net/LPTF_Utils.hpp"
 
 
 class Server {

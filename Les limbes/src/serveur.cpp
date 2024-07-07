@@ -8,8 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "LPTF_Net/LPTF_Socket.hpp"
-#include "LPTF_Net/LPTF_Utils.hpp"
+#include "../include/LPTF_Socket.hpp"
 
 constexpr int MAX_BUFFER_SIZE = 1024;
 
@@ -41,25 +40,20 @@ public:
             int clientSockfd = serverSocket->accept(reinterpret_cast<struct sockaddr *>(&clientAddr), &clientAddrLen);
 
             std::cout << "New client connected: " << inet_ntoa(clientAddr.sin_addr) << ":" << ntohs(clientAddr.sin_port) << ". Waiting for his response..." << std::endl;
-            
-            try {
-                LPTF_Packet client_packet = serverSocket->recv(clientSockfd, 0);
-                client_packet.print_specs();
-                std::cout << "Received from client: \"" << std::string((const char *)client_packet.get_content(), client_packet.get_header().length) << '\"' << std::endl;
-            } catch (std::runtime_error &ex) {
-                std::cout << "Error when receiving client response: " << ex.what() << std::endl;
-                std::cout << "Closing connection..." << std::endl;
 
-                close(clientSockfd);
-                continue;
-            }
+            char buffer[MAX_BUFFER_SIZE];
+            ssize_t bytesReceived = serverSocket->recv(clientSockfd, buffer, MAX_BUFFER_SIZE, 0);
+
+            if (bytesReceived > 0)
+                std::cout << "Received: " << std::string(buffer, bytesReceived) << std::endl;
+            else if (bytesReceived == 0)
+                std::cout << "Got empty response from client. (0 bytes)" << std::endl;
+            else
+                std::cout << "Error when receiving client response (" << bytesReceived << " bytes)" << std::endl;
 
             std::cout << "Sending message to client... ";
 
-            LPTF_Packet message_packet = build_message_packet("Hello from server!");
-            message_packet.print_specs();
-
-            int ret = serverSocket->send(clientSockfd, message_packet, 0);
+            int ret = serverSocket->send(clientSockfd, "Hello from server!", 19, 0);
             if (ret == -1)
                 std::cout << "Failed!" << std::endl;
             else
